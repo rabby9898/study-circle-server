@@ -26,11 +26,23 @@ async function run() {
       .db("createdAssignmentsDB")
       .collection("assignments");
 
+    const submitCollection = client
+      .db("createdAssignmentsDB")
+      .collection("submit");
+
     app.post("/assignments", async (req, res) => {
       const assignments = req.body;
       const result = await assignmentsCollection.insertOne(assignments);
       res.send(result);
     });
+
+    // submitted assignments
+    app.post("/submit", async (req, res) => {
+      const submits = req.body;
+      const result = await submitCollection.insertOne(submits);
+      res.send(result);
+    });
+
     app.get("/assignments", async (req, res) => {
       const cursor = assignmentsCollection.find();
       const result = await cursor.toArray();
