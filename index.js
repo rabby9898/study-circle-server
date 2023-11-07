@@ -43,6 +43,31 @@ async function run() {
       const result = await assignmentsCollection.findOne(query);
       res.send(result);
     });
+
+    app.put("/assignments/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateAssignment = req.body;
+
+      const assignments = {
+        $set: {
+          imgUrl: updateAssignment.imgUrl,
+          title: updateAssignment.title,
+          marks: updateAssignment.marks,
+          description: updateAssignment.description,
+          difficulty: updateAssignment.difficulty,
+          date: updateAssignment.date,
+        },
+      };
+
+      const result = await assignmentsCollection.updateOne(
+        filter,
+        assignments,
+        options
+      );
+      res.send(result);
+    });
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
