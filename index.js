@@ -10,26 +10,29 @@ const app = express();
 // middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "https://study-circle-65963.web.app",
+      "https://study-circle-65963.firebaseapp.com",
+    ],
     credentials: true,
   })
 );
 app.use(express.json());
 app.use(cookieParser());
 
-const verifyToken = (req, res, next) => {
-  const token = req?.cookies?.token;
-  if (!token) {
-    return res.status(401).send({ message: "Unauthorized access" });
-  }
-  jwt.verify(token, process.env.ACCESS_SECRET_TOKEN, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ message: "Unauthorized access" });
-    }
-    req.user = decoded;
-    next();
-  });
-};
+// const verifyToken = (req, res, next) => {
+//   const token = req?.cookies?.token;
+//   if (!token) {
+//     return res.status(401).send({ message: "Unauthorized access" });
+//   }
+//   jwt.verify(token, process.env.ACCESS_SECRET_TOKEN, (err, decoded) => {
+//     if (err) {
+//       return res.status(401).send({ message: "Unauthorized access" });
+//     }
+//     req.user = decoded;
+//     next();
+//   });
+// };
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qczjssr.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -70,14 +73,14 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/assignments/:id", verifyToken, async (req, res) => {
+    app.get("/assignments/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await assignmentsCollection.findOne(query);
       res.send(result);
     });
 
-    app.put("/assignments/:id", verifyToken, async (req, res) => {
+    app.put("/assignments/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
